@@ -4,8 +4,8 @@ import { useNoteStore } from "../../../../../../store/notes";
 
 const List = () => {
   const notes = useNoteStore((state) => state.notes);
-  const selectedNote = useNoteStore((state) => state.selectedNote);
-  const setSelectedNote = useNoteStore((state) => state.setSelectedNote);
+  const selectedNoteId = useNoteStore((state) => state.selectedNoteId);
+  const setSelectedNoteId = useNoteStore((state) => state.setSelectedNoteId);
   const deleteNote = useNoteStore((state) => state.deleteNote);
 
   if (notes.length === 0) {
@@ -26,12 +26,12 @@ const List = () => {
       {notes.map((note) => (
         <li
           className="flex cursor-pointer justify-between rounded-sm text-sm data-[selected=true]:bg-neutral-700 data-[selected=true]:text-white"
-          data-selected={selectedNote?.id === note.id}
+          data-selected={selectedNoteId === note.id}
           key={note.id}
         >
           <p
             className="grow p-2 text-sm text-neutral-300 group-hover:text-white"
-            onClick={() => setSelectedNote(note.id)}
+            onClick={() => setSelectedNoteId(note.id)}
           >
             {note.title || "Untitled Note"}
           </p>

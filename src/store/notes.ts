@@ -10,8 +10,8 @@ type NoteStore = {
   notes: Note[];
   addNote: () => Note;
   deleteNote: (args: NoteDelete) => Note;
-  selectedNote: Note | null;
-  setSelectedNote: (id: string | null) => void;
+  selectedNoteId: string | null;
+  setSelectedNoteId: (id: string | null) => void;
   updateNote: (note: NoteUpdate) => Note;
 };
 
@@ -19,7 +19,7 @@ export const useNoteStore = create<NoteStore>()(
   persist(
     (set, get) => ({
       notes: [],
-      selectedNote: null,
+      selectedNoteId: null,
       addNote: () => {
         const newNote: Note = {
           content: "",
@@ -39,7 +39,7 @@ export const useNoteStore = create<NoteStore>()(
       },
       deleteNote: ({ id }: NoteDelete) => {
         const noteToDelete = get().notes.find((note) => note.id === id);
-        const selectedNote = get().selectedNote;
+        const selectedNoteId = get().selectedNoteId;
         if (!noteToDelete) {
           throw new Error(`Note with id ${id} not found`);
         }
@@ -48,14 +48,13 @@ export const useNoteStore = create<NoteStore>()(
         // Add the new note to the store
         set({
           notes: currentNotes.filter((note) => note.id !== id),
-          selectedNote: selectedNote?.id === id ? null : selectedNote,
+          selectedNoteId: selectedNoteId === id ? null : selectedNoteId,
         });
 
         return noteToDelete;
       },
-      setSelectedNote: (id: string | null) => {
-        const note = get().notes.find((note) => note.id === id);
-        set({ selectedNote: note || null });
+      setSelectedNoteId: (id: string | null) => {
+        set({ selectedNoteId: id });
       },
       updateNote: ({ content, id, title }: NoteUpdate) => {
         const note = get().notes.find((note) => note.id === id);

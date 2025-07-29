@@ -1,10 +1,13 @@
 import { useNoteStore } from "../../../../store/notes";
 
 const Editor = () => {
-  const selectedNote = useNoteStore((state) => state.selectedNote);
+  const selectedNoteId = useNoteStore((state) => state.selectedNoteId);
   const updateNote = useNoteStore((state) => state.updateNote);
+  const selectedNote = useNoteStore((state) =>
+    state.notes.find((note) => note.id === selectedNoteId),
+  );
 
-  if (!selectedNote) {
+  if (!selectedNoteId) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <p className="text-xl text-neutral-300">Select a note.</p>
@@ -12,9 +15,17 @@ const Editor = () => {
     );
   }
 
+  if (!selectedNote) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <p className="text-xl text-neutral-300">Note not found.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
-      <div key={selectedNote.id} className="h-full w-full">
+      <div key={selectedNoteId} className="h-full w-full">
         <input
           className="mb-4 w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-2xl text-white focus-visible:outline"
           onChange={(e) => {
