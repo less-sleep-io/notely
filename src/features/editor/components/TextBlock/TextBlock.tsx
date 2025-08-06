@@ -1,25 +1,43 @@
 import { useClickOutside } from "@mantine/hooks";
-import { type HTMLAttributes, useState } from "react";
+import { useState } from "react";
 
+import type { TextBlock as TextBlockType } from "../../../../shared.types";
 import { useNoteStore } from "../../../../store/notes";
+import ContentBlock, {
+  type ContentBlockProps,
+} from "../ContentBlock/ContentBlock";
+import Controls from "../Controls";
 
-interface TextBlockProps extends HTMLAttributes<HTMLDivElement> {
-  blockId: string;
-  className?: string;
+interface EditBlockProps {
+  block: TextBlockType;
+  onClickOutside: () => void;
 }
 
-const TextBlock = ({ blockId, ...rest }: TextBlockProps) => {
+const EditBlock = ({ block, onClickOutside }: EditBlockProps) => {
+  const updateContentBlock = useNoteStore((state) => state.updateContentBlock);
+  const ref = useClickOutside(onClickOutside);
+
+  return (
+    <textarea
+      className="rounded border border-neutral-300 p-2"
+      onChange={(e) => {
+        updateContentBlock(block.id, e.target.value);
+      }}
+      ref={ref}
+      value={block.content}
+    />
+  );
+};
+
+interface TextBlockProps extends Omit<ContentBlockProps, "block"> {
+  blockId: string;
+}
+
+const TextBlock = ({ blockId, onAddContentBlock, ...rest }: TextBlockProps) => {
   const block = useNoteStore((state) => {
-    console.log("state", state);
     return state.contentBlocks.get(blockId);
   });
-  const updateContentBlock = useNoteStore((state) => state.updateContentBlock);
   const [isEditing, setIsEditing] = useState(false);
-  const ref = useClickOutside(() => {
-    if (isEditing) {
-      setIsEditing(false);
-    }
-  });
 
   if (!block) {
     return (
@@ -29,26 +47,26 @@ const TextBlock = ({ blockId, ...rest }: TextBlockProps) => {
     );
   }
 
-  if (isEditing) {
-    return (
-      <div className="w-full" {...rest} ref={ref}>
-        <textarea
-          className="w-full rounded border border-neutral-300 p-2"
-          onChange={(e) => {
-            updateContentBlock(blockId, e.target.value);
-          }}
-          value={block.content}
-        />
-      </div>
-    );
-  }
-
-  const Tag = block.type || "div"; // Default to 'div' if type is not defined
+  const Tag = block.tag || "div"; // Default to 'div' if type is not defined
 
   return (
-    <Tag className="w-full" onClick={() => setIsEditing(true)}>
-      {block.content}
-    </Tag>
+    <ContentBlock block={block} onAddContentBlock={onAddContentBlock} {...rest}>
+      <Controls />
+      {isEditing ? (
+        <EditBlock
+          block={block}
+          onClickOutside={() => {
+            if (isEditing) {
+              setIsEditing(false);
+            }
+          }}
+        />
+      ) : (
+        <Tag className="w-full" onClick={() => setIsEditing(true)}>
+          {block.content}
+        </Tag>
+      )}
+    </ContentBlock>
   );
 };
 

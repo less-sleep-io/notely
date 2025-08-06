@@ -30,7 +30,7 @@ const List = () => {
           key={note.id}
         >
           <p
-            className="grow p-2 text-sm text-neutral-300 group-hover:text-white"
+            className="grow px-3 py-2 text-sm text-neutral-300 group-hover:text-white"
             onClick={() => setSelectedNoteId(note.id)}
           >
             {note.title || "Untitled Note"}

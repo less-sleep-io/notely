@@ -1,10 +1,12 @@
-export type TextBlockType = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p";
+import { TEXT_BLOCK_TAGS } from "./shared.constants";
+
+export type TextBlockTag = keyof typeof TEXT_BLOCK_TAGS;
 
 export interface TextBlock {
   createdAt: Date;
   id: string;
   content: string;
-  type: TextBlockType;
+  tag: TextBlockTag;
   updatedAt: Date;
 }
 

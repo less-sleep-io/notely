@@ -4,8 +4,6 @@ import { useNoteStore } from "../../../../store/notes";
 import List from "./components/List";
 
 const NotesList = () => {
-  const store = useNoteStore();
-  console.log("NotesList store", store);
   const addNote = useNoteStore((state) => state.addNote);
   const setSelectedNoteId = useNoteStore((state) => state.setSelectedNoteId);
 

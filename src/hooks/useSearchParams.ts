@@ -6,8 +6,6 @@ const useSearchParam = (param: string) => {
   );
   const [value, setValue] = useState(searchParams.get(param));
 
-  console.log("Current Search Params:", searchParams.get(param));
-
   const setParam = (key: string, value: string) => {
     searchParams.set(key, value);
     setSearchParams(new URLSearchParams(searchParams));

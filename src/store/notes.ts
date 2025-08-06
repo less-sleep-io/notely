@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import type { Note, TextBlock, TextBlockType } from "../shared.types";
+import { TEXT_BLOCK_TAGS } from "../shared.constants";
+import type { Note, TextBlock, TextBlockTag } from "../shared.types";
 
 export type NoteUpdate = Pick<Note, "id" | "title" | "content">;
 export type NoteDelete = Pick<Note, "id">;
@@ -9,7 +10,8 @@ export type NoteDelete = Pick<Note, "id">;
 export interface AddContentBlockArgs {
   index: number;
   noteId: string;
-  type: TextBlockType;
+  tag: TextBlockTag;
+  type: "text";
 }
 
 type NoteStore = {
@@ -29,12 +31,12 @@ type NoteStore = {
 
 const createContentBlock = (
   content = "New block",
-  type: TextBlockType,
+  tag: TextBlockTag,
 ): TextBlock => ({
   id: crypto.randomUUID(),
   content,
   createdAt: new Date(),
-  type,
+  tag,
   updatedAt: new Date(),
 });
 
@@ -66,14 +68,14 @@ export const useNoteStore = create<NoteStore>()(
 
         return newNote;
       },
-      addContentBlock: ({ index, noteId, type }) => {
+      addContentBlock: ({ index, noteId, tag }) => {
         const note = get().notes.find((note) => note.id === noteId);
 
         if (!note) {
           throw new Error(`Note with id ${noteId} not found`);
         }
 
-        const newBlock = createContentBlock("New block", type);
+        const newBlock = createContentBlock(TEXT_BLOCK_TAGS[tag], tag);
         const updatedContent = [...note.content];
         updatedContent.splice(index, 0, newBlock.id);
         const updatedNote: Note = {
@@ -210,13 +212,6 @@ export const useNoteStore = create<NoteStore>()(
           return value;
         },
       }),
-      onRehydrateStorage: (state) => {
-        return () => {
-          if (state) {
-            state.contentBlocks = new Map(state.contentBlocks);
-          }
-        };
-      },
       partialize: (state) => ({
         contentBlocks: state.contentBlocks,
         notes: state.notes,
