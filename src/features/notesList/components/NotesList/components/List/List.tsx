@@ -3,10 +3,11 @@ import { Trash } from "iconoir-react";
 import { useNoteStore } from "../../../../../../store/notes";
 
 const List = () => {
-  const notes = useNoteStore((state) => state.notes);
-  const selectedNoteId = useNoteStore((state) => state.selectedNoteId);
-  const setSelectedNoteId = useNoteStore((state) => state.setSelectedNoteId);
-  const deleteNote = useNoteStore((state) => state.deleteNote);
+  const state = useNoteStore((state) => state);
+  const notes = state.getNotes();
+  const selectedNoteId = state.selectedNoteId;
+  const setSelectedNoteId = state.setSelectedNoteId;
+  const deleteNote = state.deleteNote;
 
   if (notes.length === 0) {
     return (

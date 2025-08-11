@@ -35,7 +35,7 @@ interface TextBlockProps extends Omit<ContentBlockProps, "block"> {
 
 const TextBlock = ({ blockId, onAddContentBlock, ...rest }: TextBlockProps) => {
   const block = useNoteStore((state) => {
-    return state.contentBlocks.get(blockId);
+    return state.contentBlocks.byId[blockId];
   });
   const [isEditing, setIsEditing] = useState(false);
 

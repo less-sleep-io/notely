@@ -2,12 +2,11 @@ import { useNoteStore } from "../../../store/notes";
 import TextBlock from "../components/TextBlock";
 
 const Editor = () => {
-  const selectedNoteId = useNoteStore((state) => state.selectedNoteId);
-  const contentBlocks = useNoteStore((state) => state.contentBlocks);
-  const addContentBlock = useNoteStore((state) => state.addContentBlock);
-  const note = useNoteStore((state) =>
-    state.notes.find((note) => note.id === selectedNoteId),
-  );
+  const state = useNoteStore((state) => state);
+  const selectedNoteId = state.selectedNoteId;
+  const contentBlocks = state.contentBlocks;
+  const addContentBlock = state.addContentBlock;
+  const note = selectedNoteId ? state.notes.byId[selectedNoteId] : null;
 
   if (!selectedNoteId) {
     return (
@@ -29,7 +28,7 @@ const Editor = () => {
     ...note,
     content: note?.content
       .map((blockId) => {
-        return contentBlocks.get(blockId);
+        return contentBlocks.byId[blockId];
       })
       .filter((block) => block !== undefined),
   };

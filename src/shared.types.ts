@@ -10,10 +10,14 @@ export interface TextBlock {
   updatedAt: Date;
 }
 
-export interface Note {
+export interface NotePrimitive {
   content: string[];
   createdAt: Date;
   id: string;
   title: string;
   updatedAt: Date;
+}
+
+export interface Note extends Omit<NotePrimitive, "content"> {
+  content: TextBlock[];
 }

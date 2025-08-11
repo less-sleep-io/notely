@@ -2,7 +2,12 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import { TEXT_BLOCK_TAGS } from "../shared.constants";
-import type { Note, TextBlock, TextBlockTag } from "../shared.types";
+import type {
+  Note,
+  NotePrimitive,
+  TextBlock,
+  TextBlockTag,
+} from "../shared.types";
 
 export type NoteUpdate = Pick<Note, "id" | "title" | "content">;
 export type NoteDelete = Pick<Note, "id">;
@@ -15,18 +20,30 @@ export interface AddContentBlockArgs {
 }
 
 type NoteStore = {
-  addNote: () => Note;
-  addContentBlock: (args: AddContentBlockArgs) => Note;
-  contentBlocks: Map<string, TextBlock>;
-  deleteNote: (args: NoteDelete) => Note;
-  notes: Note[];
+  addNote: () => NotePrimitive;
+  addContentBlock: (args: AddContentBlockArgs) => void;
+  contentBlocks: {
+    allIds: string[];
+    byId: {
+      [id: string]: TextBlock;
+    };
+  };
+  deleteNote: (args: NoteDelete) => void;
+  getNote: (args: { id: string }) => Note;
+  getNotes: () => Note[];
+  notes: {
+    allIds: string[];
+    byId: {
+      [id: string]: NotePrimitive;
+    };
+  };
   selectedNoteId: string | null;
   setSelectedNoteId: (id: string | null) => void;
   updateContentBlock: (
     blockId: string,
     content: string,
   ) => Pick<TextBlock, "content" | "id" | "updatedAt">;
-  updateNote: (note: NoteUpdate) => Note;
+  updateNote: (note: NoteUpdate) => void;
 };
 
 const createContentBlock = (
@@ -43,33 +60,52 @@ const createContentBlock = (
 export const useNoteStore = create<NoteStore>()(
   persist(
     (set, get) => ({
-      contentBlocks: new Map<string, TextBlock>(),
-      notes: [],
+      contentBlocks: {
+        allIds: [],
+        byId: {},
+      },
+      notes: {
+        allIds: [],
+        byId: {},
+      },
       selectedNoteId: null,
       addNote: () => {
+        const contentBlocks = get().contentBlocks;
+        const notes = get().notes;
         const initialBlock = createContentBlock("Note 1", "h1");
-        const newNote: Note = {
+        const newNote: NotePrimitive = {
           content: [initialBlock.id],
           createdAt: new Date(),
           id: crypto.randomUUID(),
-          title: `Note ${get().notes.length + 1}`,
+          title: `Note ${get().notes.allIds.length + 1}`,
           updatedAt: new Date(),
         };
-        const currentNotes = get().notes;
 
         // Add the new note to the store
         set({
-          contentBlocks: new Map(get().contentBlocks).set(
-            initialBlock.id,
-            initialBlock,
-          ),
-          notes: [...currentNotes, newNote],
+          contentBlocks: {
+            allIds: [...contentBlocks.allIds, initialBlock.id],
+            byId: {
+              ...contentBlocks.byId,
+              [initialBlock.id]: initialBlock,
+            },
+          },
+          notes: {
+            allIds: [...notes.allIds, newNote.id],
+            byId: {
+              ...notes.byId,
+              [newNote.id]: newNote,
+            },
+          },
         });
 
         return newNote;
       },
       addContentBlock: ({ index, noteId, tag }) => {
-        const note = get().notes.find((note) => note.id === noteId);
+        const state = get();
+        const notes = state.notes;
+        const note = notes.byId[noteId];
+        const contentBlocks = state.contentBlocks;
 
         if (!note) {
           throw new Error(`Note with id ${noteId} not found`);
@@ -78,44 +114,76 @@ export const useNoteStore = create<NoteStore>()(
         const newBlock = createContentBlock(TEXT_BLOCK_TAGS[tag], tag);
         const updatedContent = [...note.content];
         updatedContent.splice(index, 0, newBlock.id);
-        const updatedNote: Note = {
+        const updatedNote: NotePrimitive = {
           ...note,
           content: updatedContent,
           updatedAt: new Date(),
         };
-        const nextContentBlocks = new Map(get().contentBlocks);
-        nextContentBlocks.set(newBlock.id, newBlock);
         set({
-          contentBlocks: nextContentBlocks,
-          notes: get().notes.map((note) =>
-            note.id === noteId ? updatedNote : note,
-          ),
+          contentBlocks: {
+            allIds: [...contentBlocks.allIds, newBlock.id],
+            byId: {
+              ...contentBlocks.byId,
+              [newBlock.id]: newBlock,
+            },
+          },
+          notes: {
+            ...notes,
+            byId: {
+              ...notes.byId,
+              [updatedNote.id]: updatedNote,
+            },
+          },
         });
-        return updatedNote;
       },
       deleteNote: ({ id }: NoteDelete) => {
-        const noteToDelete = get().notes.find((note) => note.id === id);
+        const notes = get().notes;
+        const noteToDelete = notes.byId[id];
         const selectedNoteId = get().selectedNoteId;
         if (!noteToDelete) {
           throw new Error(`Note with id ${id} not found`);
         }
-        const currentNotes = get().notes;
+        const nextNotes = {
+          allIds: notes.allIds.filter((value) => value !== id),
+          byId: { ...notes.byId },
+        };
+        delete nextNotes.byId[id];
 
         // Add the new note to the store
         set({
-          notes: currentNotes.filter((note) => note.id !== id),
+          notes: nextNotes,
           selectedNoteId: selectedNoteId === id ? null : selectedNoteId,
         });
+      },
+      getNote: ({ id }: { id: string }) => {
+        const state = get();
+        const note = state.notes.byId[id];
+        const contentBlocks = state.contentBlocks;
 
-        return noteToDelete;
+        if (!note) {
+          throw new Error("Could not find note");
+        }
+
+        return {
+          ...note,
+          content: note.content.map((blockId) => {
+            return contentBlocks.byId[blockId];
+          }),
+        };
+      },
+      getNotes: () => {
+        const state = get();
+        const notes = state.notes;
+        return notes.allIds.map((id) => state.getNote({ id }));
       },
       setSelectedNoteId: (id: string | null) => {
         set({ selectedNoteId: id });
       },
-      updateContentBlock: (blockId: string, content: string) => {
-        const block = get().contentBlocks.get(blockId);
+      updateContentBlock: (id: string, content: string) => {
+        const contentBlocks = get().contentBlocks;
+        const block = contentBlocks.byId[id];
         if (!block) {
-          throw new Error(`Content with id ${blockId} not found`);
+          throw new Error(`Content with id ${id} not found`);
         }
         const updatedBlock: TextBlock = {
           ...block,
@@ -123,99 +191,48 @@ export const useNoteStore = create<NoteStore>()(
           updatedAt: new Date(),
         };
 
-        const nextContentBlocks = get().contentBlocks;
-        nextContentBlocks.set(blockId, updatedBlock);
-
         set({
-          contentBlocks: new Map(nextContentBlocks),
+          contentBlocks: {
+            ...contentBlocks,
+            byId: {
+              ...contentBlocks.byId,
+              [updatedBlock.id]: updatedBlock,
+            },
+          },
         });
 
         return updatedBlock;
       },
-      updateNote: ({ content, id, title }: NoteUpdate) => {
-        const note = get().notes.find((note) => note.id === id);
+      updateNote: ({ id, title }: NoteUpdate) => {
+        const notes = get().notes;
+        const note = notes.byId[id];
         if (!note) {
           throw new Error(`Note with id ${id} not found`);
         }
-        const updatedNote: Note = {
+        const updatedNote: NotePrimitive = {
           ...note,
-          content,
           title,
           updatedAt: new Date(),
         };
 
         set({
-          notes: get().notes.map((note) =>
-            note.id === id ? updatedNote : note,
-          ),
+          notes: {
+            ...notes,
+            byId: {
+              ...notes.byId,
+              [updatedNote.id]: updatedNote,
+            },
+          },
         });
-
-        return updatedNote;
       },
     }),
     {
       name: "notely",
-      storage: createJSONStorage(() => localStorage, {
-        // Custom reviver to handle Map deserialization
-        // This will convert the stored array back to a Map
-        // when the state is rehydrated from localStorage
-        // and format dates as Date objects
-        reviver: (key, value) => {
-          if (key === "contentBlocks") {
-            const data = value as TextBlock[];
-            const contentBlocks = new Map<string, TextBlock>();
-            data.forEach((block: TextBlock) => {
-              contentBlocks.set(block.id, {
-                ...block,
-                createdAt: new Date(block.createdAt),
-                updatedAt: new Date(block.updatedAt),
-              });
-            });
-            return contentBlocks;
-          }
-
-          if (key === "notes") {
-            const notes = value as Note[];
-            return notes.map((note) => ({
-              ...note,
-              createdAt: new Date(note.createdAt),
-              updatedAt: new Date(note.updatedAt),
-            }));
-          }
-
-          return value;
-        },
-        // Custom replacer to handle Map serialization
-        // This will convert the Map to an array of objects
-        // when the state is stored in localStorage
-        // and format dates as ISO strings
-        replacer: (key, value) => {
-          if (key === "contentBlocks") {
-            const contentBlocks = value as NoteStore["contentBlocks"];
-            return Array.from(contentBlocks.values()).map((block) => ({
-              ...block,
-              createdAt: block.createdAt.toISOString(),
-              updatedAt: block.updatedAt.toISOString(),
-            }));
-          }
-
-          if (key === "notes") {
-            const notes = value as NoteStore["notes"];
-            return notes.map((note) => ({
-              ...note,
-              createdAt: note.createdAt.toISOString(),
-              updatedAt: note.updatedAt.toISOString(),
-            }));
-          }
-
-          // Default behavior for other keys
-          return value;
-        },
-      }),
       partialize: (state) => ({
         contentBlocks: state.contentBlocks,
         notes: state.notes,
       }),
+      storage: createJSONStorage(() => localStorage),
     },
   ),
 );

@@ -4,8 +4,7 @@ import { useNoteStore } from "../../../../store/notes";
 import List from "./components/List";
 
 const NotesList = () => {
-  const addNote = useNoteStore((state) => state.addNote);
-  const setSelectedNoteId = useNoteStore((state) => state.setSelectedNoteId);
+  const { addNote, setSelectedNoteId } = useNoteStore((state) => state);
 
   return (
     <nav className="h-full w-full bg-neutral-800 text-white">
