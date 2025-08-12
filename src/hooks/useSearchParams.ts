@@ -6,8 +6,8 @@ const useSearchParam = (param: string) => {
   );
   const [value, setValue] = useState(searchParams.get(param));
 
-  const setParam = (key: string, value: string) => {
-    searchParams.set(key, value);
+  const setParam = (value: string) => {
+    searchParams.set(param, value);
     setSearchParams(new URLSearchParams(searchParams));
     setValue(value);
     window.history.replaceState({}, "", `?${searchParams.toString()}`);

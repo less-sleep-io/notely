@@ -19,7 +19,7 @@ export interface AddContentBlockArgs {
   type: "text";
 }
 
-type NoteStore = {
+export interface NoteStore {
   addNote: () => NotePrimitive;
   addContentBlock: (args: AddContentBlockArgs) => void;
   contentBlocks: {
@@ -44,7 +44,7 @@ type NoteStore = {
     content: string,
   ) => Pick<TextBlock, "content" | "id" | "updatedAt">;
   updateNote: (note: NoteUpdate) => void;
-};
+}
 
 const createContentBlock = (
   content = "New block",

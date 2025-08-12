@@ -1,13 +1,14 @@
 import { Trash } from "iconoir-react";
 
+import useSearchParam from "../../../../../../hooks/useSearchParams";
 import { useNoteStore } from "../../../../../../store/notes";
 
 const List = () => {
   const state = useNoteStore((state) => state);
   const notes = state.getNotes();
   const selectedNoteId = state.selectedNoteId;
-  const setSelectedNoteId = state.setSelectedNoteId;
   const deleteNote = state.deleteNote;
+  const { setParam: setIdParam } = useSearchParam("id");
 
   if (notes.length === 0) {
     return (
@@ -32,7 +33,7 @@ const List = () => {
         >
           <p
             className="grow px-3 py-2 text-sm text-neutral-300 group-hover:text-white"
-            onClick={() => setSelectedNoteId(note.id)}
+            onClick={() => setIdParam(note.id)}
           >
             {note.title || "Untitled Note"}
           </p>

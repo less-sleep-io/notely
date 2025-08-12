@@ -1,14 +1,15 @@
+import useSearchParam from "../../../hooks/useSearchParams";
 import { useNoteStore } from "../../../store/notes";
 import TextBlock from "../components/TextBlock";
 
 const Editor = () => {
   const state = useNoteStore((state) => state);
-  const selectedNoteId = state.selectedNoteId;
   const contentBlocks = state.contentBlocks;
   const addContentBlock = state.addContentBlock;
-  const note = selectedNoteId ? state.notes.byId[selectedNoteId] : null;
+  const { value: noteId } = useSearchParam("id");
+  const note = noteId ? state.notes.byId[noteId] : null;
 
-  if (!selectedNoteId) {
+  if (!noteId) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <p className="text-xl text-neutral-300">Select a note.</p>
@@ -34,7 +35,7 @@ const Editor = () => {
   };
 
   return (
-    <div className="w-full" key={selectedNoteId}>
+    <div className="w-full" key={noteId}>
       <div className="flex min-h-full w-full flex-col gap-4">
         <div className="flex grow flex-col">
           {selectedNote.content.map((block, i) => {
