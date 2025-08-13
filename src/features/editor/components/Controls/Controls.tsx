@@ -24,9 +24,7 @@ const Controls = () => {
       <DropdownMenu>
         <DropdownMenu.Trigger asChild={true}>
           <TriggerButton>
-            <button className="flex h-5 w-5 cursor-pointer items-center justify-center rounded hover:bg-neutral-700">
-              <MoreHorizCircle className="h-4 w-4" />
-            </button>
+            <MoreHorizCircle className="h-4 w-4" />
           </TriggerButton>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>

@@ -1,12 +1,12 @@
+import { useNavigate } from "@tanstack/react-router";
 import { PagePlus } from "iconoir-react";
 
-import useSearchParam from "../../../../hooks/useSearchParams";
 import { useNoteStore } from "../../../../store/notes";
 import List from "./components/List";
 
 const NotesList = () => {
   const { addNote } = useNoteStore((state) => state);
-  const { setParam: setIdParam } = useSearchParam("id");
+  const navigate = useNavigate();
 
   return (
     <nav className="h-full w-full bg-neutral-800 text-white">
@@ -14,7 +14,13 @@ const NotesList = () => {
         <h1 className="text-md text-neutral-300">Notely</h1>
         <button
           className="flex cursor-pointer items-center justify-end rounded-sm p-1.5 text-neutral-300 hover:bg-neutral-700 hover:text-white"
-          onClick={() => setIdParam(addNote().id)}
+          onClick={() => {
+            const note = addNote();
+            navigate({
+              params: { noteId: note.id },
+              to: "/notes/$noteId",
+            });
+          }}
         >
           <PagePlus className="h-5 w-5" />
         </button>

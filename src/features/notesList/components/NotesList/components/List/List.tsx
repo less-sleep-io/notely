@@ -1,14 +1,12 @@
+import { Link } from "@tanstack/react-router";
 import { Trash } from "iconoir-react";
 
-import useSearchParam from "../../../../../../hooks/useSearchParams";
 import { useNoteStore } from "../../../../../../store/notes";
 
 const List = () => {
   const state = useNoteStore((state) => state);
   const notes = state.getNotes();
-  const selectedNoteId = state.selectedNoteId;
   const deleteNote = state.deleteNote;
-  const { setParam: setIdParam } = useSearchParam("id");
 
   if (notes.length === 0) {
     return (
@@ -27,16 +25,16 @@ const List = () => {
     <ul className="space-y-2">
       {notes.map((note) => (
         <li
-          className="flex cursor-pointer justify-between rounded-sm text-sm data-[selected=true]:bg-neutral-700 data-[selected=true]:text-white"
-          data-selected={selectedNoteId === note.id}
+          className="flex cursor-pointer justify-between rounded-sm text-sm has-data-[status='active']:bg-neutral-700 has-data-[status='active']:text-white"
           key={note.id}
         >
-          <p
+          <Link
             className="grow px-3 py-2 text-sm text-neutral-300 group-hover:text-white"
-            onClick={() => setIdParam(note.id)}
+            params={{ noteId: note.id }}
+            to="/notes/$noteId"
           >
             {note.title || "Untitled Note"}
-          </p>
+          </Link>
           <button
             className="cursor-pointer px-3 py-1 text-neutral-400 group-hover:text-shadow-neutral-100"
             onClick={() => deleteNote(note)}

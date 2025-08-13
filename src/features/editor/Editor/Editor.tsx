@@ -1,21 +1,15 @@
-import useSearchParam from "../../../hooks/useSearchParams";
 import { useNoteStore } from "../../../store/notes";
 import TextBlock from "../components/TextBlock";
 
-const Editor = () => {
+interface EditorProps {
+  noteId: string;
+}
+
+const Editor = ({ noteId }: EditorProps) => {
   const state = useNoteStore((state) => state);
   const contentBlocks = state.contentBlocks;
   const addContentBlock = state.addContentBlock;
-  const { value: noteId } = useSearchParam("id");
   const note = noteId ? state.notes.byId[noteId] : null;
-
-  if (!noteId) {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <p className="text-xl text-neutral-300">Select a note.</p>
-      </div>
-    );
-  }
 
   if (!note) {
     return (
