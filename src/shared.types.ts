@@ -4,8 +4,9 @@ export type TextBlockTag = keyof typeof TEXT_BLOCK_TAGS;
 
 export interface TextBlock {
   createdAt: Date;
-  id: string;
   content: string;
+  id: string;
+  parentId: string;
   tag: TextBlockTag;
   updatedAt: Date;
 }

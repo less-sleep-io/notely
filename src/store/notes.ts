@@ -19,6 +19,11 @@ export interface AddContentBlockArgs {
   type: "text";
 }
 
+export interface RemoveContentBlockArgs {
+  blockId: string;
+  noteId: string;
+}
+
 export interface NoteStore {
   addNote: () => NotePrimitive;
   addContentBlock: (args: AddContentBlockArgs) => void;
@@ -37,6 +42,7 @@ export interface NoteStore {
       [id: string]: NotePrimitive;
     };
   };
+  removeContentBlock: (args: RemoveContentBlockArgs) => void;
   selectedNoteId: string | null;
   setSelectedNoteId: (id: string | null) => void;
   updateContentBlock: (
@@ -49,10 +55,12 @@ export interface NoteStore {
 const createContentBlock = (
   content = "New block",
   tag: TextBlockTag,
+  parentId: string,
 ): TextBlock => ({
   id: crypto.randomUUID(),
   content,
   createdAt: new Date(),
+  parentId,
   tag,
   updatedAt: new Date(),
 });
@@ -72,11 +80,12 @@ export const useNoteStore = create<NoteStore>()(
       addNote: () => {
         const contentBlocks = get().contentBlocks;
         const notes = get().notes;
-        const initialBlock = createContentBlock("Note 1", "h1");
+        const noteId = crypto.randomUUID();
+        const initialBlock = createContentBlock("Note 1", "h1", noteId);
         const newNote: NotePrimitive = {
           content: [initialBlock.id],
           createdAt: new Date(),
-          id: crypto.randomUUID(),
+          id: noteId,
           title: `Note ${get().notes.allIds.length + 1}`,
           updatedAt: new Date(),
         };
@@ -111,7 +120,7 @@ export const useNoteStore = create<NoteStore>()(
           throw new Error(`Note with id ${noteId} not found`);
         }
 
-        const newBlock = createContentBlock(TEXT_BLOCK_TAGS[tag], tag);
+        const newBlock = createContentBlock(TEXT_BLOCK_TAGS[tag], tag, noteId);
         const updatedContent = [...note.content];
         updatedContent.splice(index, 0, newBlock.id);
         const updatedNote: NotePrimitive = {
@@ -135,6 +144,8 @@ export const useNoteStore = create<NoteStore>()(
             },
           },
         });
+
+        return newBlock;
       },
       deleteNote: ({ id }: NoteDelete) => {
         const notes = get().notes;
@@ -154,6 +165,8 @@ export const useNoteStore = create<NoteStore>()(
           notes: nextNotes,
           selectedNoteId: selectedNoteId === id ? null : selectedNoteId,
         });
+
+        return noteToDelete;
       },
       getNote: ({ id }: { id: string }) => {
         const state = get();
@@ -175,6 +188,39 @@ export const useNoteStore = create<NoteStore>()(
         const state = get();
         const notes = state.notes;
         return notes.allIds.map((id) => state.getNote({ id }));
+      },
+      removeContentBlock: ({ blockId, noteId }) => {
+        const state = get();
+        const notes = state.notes;
+        const note = notes.byId[noteId];
+        const contentBlocks = state.contentBlocks;
+        const blockToDelete = state.contentBlocks.byId[blockId];
+
+        if (!note) {
+          throw new Error(`Note with id ${noteId} not found`);
+        }
+
+        const updatedNote: NotePrimitive = {
+          ...note,
+          content: [...note.content].filter((id) => id !== blockId),
+          updatedAt: new Date(),
+        };
+        delete contentBlocks.byId[blockId];
+        set({
+          contentBlocks: {
+            allIds: contentBlocks.allIds.filter((id) => id === blockId),
+            byId: { ...contentBlocks.byId },
+          },
+          notes: {
+            ...notes,
+            byId: {
+              ...notes.byId,
+              [updatedNote.id]: updatedNote,
+            },
+          },
+        });
+
+        return blockToDelete;
       },
       setSelectedNoteId: (id: string | null) => {
         set({ selectedNoteId: id });
@@ -224,6 +270,8 @@ export const useNoteStore = create<NoteStore>()(
             },
           },
         });
+
+        return updatedNote;
       },
     }),
     {

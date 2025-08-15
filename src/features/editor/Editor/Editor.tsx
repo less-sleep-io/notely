@@ -37,14 +37,15 @@ const Editor = ({ noteId }: EditorProps) => {
               <TextBlock
                 blockId={block.id}
                 key={block.id}
-                onAddContentBlock={({ tag, type }) =>
-                  addContentBlock({
+                onAddContentBlock={({ tag, type }) => {
+                  const block = addContentBlock({
                     index: i + 1,
                     noteId: selectedNote.id,
                     tag,
                     type,
-                  })
-                }
+                  });
+                  console.log(block);
+                }}
               />
             );
           })}

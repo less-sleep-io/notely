@@ -19,6 +19,7 @@ export interface ContentBlockProps extends HTMLAttributes<HTMLDivElement> {
 const ContentBlock = ({
   block,
   children,
+  className,
   onAddContentBlock,
   ...rest
 }: ContentBlockProps) => {
@@ -33,7 +34,7 @@ const ContentBlock = ({
   }
 
   return (
-    <div className="flex w-full flex-col" {...rest}>
+    <div className={cn("flex w-full flex-col", className)} {...rest}>
       <div className="flex w-full items-start gap-5" {...rest}>
         {children}
       </div>
