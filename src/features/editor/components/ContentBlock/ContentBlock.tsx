@@ -38,42 +38,43 @@ const ContentBlock = ({
       <div className="flex w-full items-start gap-5" {...rest}>
         {children}
       </div>
-      <div
-        className={cn(
-          "flex h-6 w-full cursor-pointer items-center gap-5 opacity-0 hover:opacity-100",
-          {
-            "opacity-100": isMenuOpen,
-          },
-        )}
-        {...rest}
-      >
-        <DropdownMenu onOpenChange={setIsMenuOpen} open={isMenuOpen}>
-          <DropdownMenu.Trigger asChild={true}>
-            <DropdownMenu.Trigger>
-              <Plus className="h-4 w-4" />
-            </DropdownMenu.Trigger>
+      <DropdownMenu onOpenChange={setIsMenuOpen} open={isMenuOpen}>
+        <DropdownMenu.Trigger asChild={true}>
+          <DropdownMenu.Trigger>
+            <div
+              className={cn(
+                "flex h-6 w-full cursor-pointer items-center gap-2 opacity-0 hover:opacity-100",
+                {
+                  "opacity-100": isMenuOpen,
+                },
+              )}
+              {...rest}
+            >
+              <div className="h-px w-full border-b-2 border-neutral-700" />
+              <Plus className="h-4 w-4 shrink-0" />
+              <div className="h-px w-full border-b-2 border-neutral-700" />
+            </div>
           </DropdownMenu.Trigger>
-          <DropdownMenu.Content align="start" className="min-w-40">
-            <DropdownMenu.Label>Add block after:</DropdownMenu.Label>
-            {Object.entries(TEXT_BLOCK_TAGS).map(([tag, label]) => {
-              return (
-                <DropdownMenu.Item
-                  onSelect={() =>
-                    onAddContentBlock({
-                      tag: tag as TextBlockTag,
-                      type: "text",
-                    })
-                  }
-                  key={tag}
-                >
-                  {label}
-                </DropdownMenu.Item>
-              );
-            })}
-          </DropdownMenu.Content>
-        </DropdownMenu>
-        <div className="h-px w-full border-b-2 border-neutral-700" />
-      </div>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content align="center" side="top">
+          {Object.entries(TEXT_BLOCK_TAGS).map(([tag, label]) => {
+            return (
+              <DropdownMenu.Item
+                onSelect={() =>
+                  onAddContentBlock({
+                    tag: tag as TextBlockTag,
+                    type: "text",
+                  })
+                }
+                key={tag}
+                title={label}
+              >
+                {tag.toUpperCase()}
+              </DropdownMenu.Item>
+            );
+          })}
+        </DropdownMenu.Content>
+      </DropdownMenu>
     </div>
   );
 };

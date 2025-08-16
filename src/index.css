@@ -13,6 +13,5 @@
 }
 
 body {
-  @apply text-base;
-  font-family: var(--font-display);
+  @apply font-display bg-neutral-900 text-base;
 }

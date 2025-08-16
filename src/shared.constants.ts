@@ -6,6 +6,4 @@ export const TEXT_BLOCK_TAGS = {
   h4: "Heading 4",
   h5: "Heading 5",
   h6: "Heading 6",
-  blockquote: "Blockquote",
-  pre: "Code Block",
 } as const;

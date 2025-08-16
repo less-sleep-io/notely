@@ -1,4 +1,5 @@
 import {
+  Arrow,
   Content,
   type DropdownMenuContentProps,
   type DropdownMenuItemProps,
@@ -25,11 +26,17 @@ const DropdownMenuContent = ({
     <Portal>
       <Content
         alignOffset={alignOffset}
-        className={cn(className, "bg-neutral-800 p-0")}
+        className={cn(
+          "flex rounded-md border border-neutral-700 bg-neutral-800 p-0",
+          className,
+        )}
+        aria-orientation="horizontal"
+        data-orientation="horizontal"
         sideOffset={sideOffset}
         {...rest}
       >
         {children}
+        <Arrow className="h-2 w-4 fill-neutral-800" />
       </Content>
     </Portal>
   );
@@ -62,7 +69,7 @@ const DropdownMenuItem = ({
     <Item
       className={cn(
         className,
-        "cursor-pointer px-4 py-3 text-sm text-neutral-300 hover:bg-neutral-700",
+        "cursor-pointer border-r border-neutral-700 px-4 py-3 text-sm text-neutral-300 last:border-r-0 hover:bg-neutral-700",
       )}
       {...rest}
     >

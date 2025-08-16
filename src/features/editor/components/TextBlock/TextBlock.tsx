@@ -86,36 +86,35 @@ const TextBlock = ({ blockId, onAddContentBlock, ...rest }: TextBlockProps) => {
   const tagStyles = getTagStyles(block.tag);
 
   return (
-    <ContentBlock
-      block={block}
-      className="group"
-      onAddContentBlock={onAddContentBlock}
-      {...rest}
-    >
-      <div className="flex items-start justify-between gap-1 py-1 opacity-0 group-hover:opacity-100">
-        <DropdownMenu>
-          <DropdownMenu.Trigger asChild={true}>
-            <button className="flex h-5 w-5 cursor-pointer items-center justify-center rounded hover:bg-neutral-700">
-              <MoreHorizCircle className="h-4 w-4" />
-            </button>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content>
-            <DropdownMenu.Item onClick={handleRemove}>Remove</DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu>
-      </div>
-      <div className="flex w-full items-start" ref={clickOutsideRef}>
-        <textarea
-          className={cn(
-            "w-full resize-none p-0 pl-2.5 text-amber-600 outline-none hover:text-white",
-            tagStyles,
-          )}
-          onChange={handleChange}
-          onSelect={() => setIsEditing(true)}
-          readOnly={!isEditing}
-          ref={elementRef}
-          value={block.content}
-        />
+    <ContentBlock block={block} onAddContentBlock={onAddContentBlock} {...rest}>
+      <div className="group flex w-full">
+        <div className="flex items-start justify-between gap-1 py-1 opacity-0 group-hover:opacity-100">
+          <DropdownMenu>
+            <DropdownMenu.Trigger asChild={true}>
+              <button className="flex h-5 w-5 cursor-pointer items-center justify-center rounded hover:bg-neutral-700">
+                <MoreHorizCircle className="h-4 w-4" />
+              </button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Item onClick={handleRemove}>
+                Remove
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu>
+        </div>
+        <div className="flex w-full items-start" ref={clickOutsideRef}>
+          <textarea
+            className={cn(
+              "w-full resize-none p-0 pl-2.5 text-amber-600 outline-none hover:text-white",
+              tagStyles,
+            )}
+            onChange={handleChange}
+            onSelect={() => setIsEditing(true)}
+            readOnly={!isEditing}
+            ref={elementRef}
+            value={block.content}
+          />
+        </div>
       </div>
     </ContentBlock>
   );
