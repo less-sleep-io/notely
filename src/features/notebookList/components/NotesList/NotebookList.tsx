@@ -4,32 +4,32 @@ import { PagePlus } from "iconoir-react";
 import { useNoteStore } from "../../../../store/notes";
 import List from "./components/List";
 
-const NotesList = () => {
-  const { addNote } = useNoteStore((state) => state);
+const NotebookList = () => {
+  const addNotebook = useNoteStore((state) => state.addNotebook);
   const navigate = useNavigate();
 
   return (
-    <nav className="h-full w-full bg-neutral-800 text-white">
-      <header className="flex items-center justify-between border-b border-neutral-700 py-2 pr-2 pl-4">
-        <h1 className="text-md text-neutral-300">Notely</h1>
+    <section className="h-full w-full bg-neutral-800 text-white">
+      <header className="flex items-center justify-between py-2 pr-2 pl-4">
+        <h1 className="text-sm text-neutral-200">Notebooks</h1>
         <button
           className="flex cursor-pointer items-center justify-end rounded-sm p-1.5 text-neutral-300 hover:bg-neutral-700 hover:text-white"
           onClick={() => {
-            const note = addNote();
+            const notebook = addNotebook();
             navigate({
-              params: { noteId: note.id },
-              to: "/notes/$noteId",
+              params: { notebookId: notebook.id },
+              to: "/notebooks/$notebookId",
             });
           }}
         >
-          <PagePlus className="h-5 w-5" />
+          <PagePlus className="h-4 w-4" />
         </button>
       </header>
       <div className="p-4">
         <List />
       </div>
-    </nav>
+    </section>
   );
 };
 
-export default NotesList;
+export default NotebookList;

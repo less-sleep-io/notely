@@ -10,43 +10,61 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as NotesNoteIdRouteImport } from './routes/notes/$noteId'
+import { Route as NotebooksNotebookIdRouteRouteImport } from './routes/notebooks/$notebookId/route'
+import { Route as NotebooksNotebookIdNotesNoteIdRouteImport } from './routes/notebooks/$notebookId/notes/$noteId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NotesNoteIdRoute = NotesNoteIdRouteImport.update({
-  id: '/notes/$noteId',
-  path: '/notes/$noteId',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const NotebooksNotebookIdRouteRoute =
+  NotebooksNotebookIdRouteRouteImport.update({
+    id: '/notebooks/$notebookId',
+    path: '/notebooks/$notebookId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const NotebooksNotebookIdNotesNoteIdRoute =
+  NotebooksNotebookIdNotesNoteIdRouteImport.update({
+    id: '/notes/$noteId',
+    path: '/notes/$noteId',
+    getParentRoute: () => NotebooksNotebookIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/notes/$noteId': typeof NotesNoteIdRoute
+  '/notebooks/$notebookId': typeof NotebooksNotebookIdRouteRouteWithChildren
+  '/notebooks/$notebookId/notes/$noteId': typeof NotebooksNotebookIdNotesNoteIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/notes/$noteId': typeof NotesNoteIdRoute
+  '/notebooks/$notebookId': typeof NotebooksNotebookIdRouteRouteWithChildren
+  '/notebooks/$notebookId/notes/$noteId': typeof NotebooksNotebookIdNotesNoteIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/notes/$noteId': typeof NotesNoteIdRoute
+  '/notebooks/$notebookId': typeof NotebooksNotebookIdRouteRouteWithChildren
+  '/notebooks/$notebookId/notes/$noteId': typeof NotebooksNotebookIdNotesNoteIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/notes/$noteId'
+  fullPaths:
+    | '/'
+    | '/notebooks/$notebookId'
+    | '/notebooks/$notebookId/notes/$noteId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/notes/$noteId'
-  id: '__root__' | '/' | '/notes/$noteId'
+  to: '/' | '/notebooks/$notebookId' | '/notebooks/$notebookId/notes/$noteId'
+  id:
+    | '__root__'
+    | '/'
+    | '/notebooks/$notebookId'
+    | '/notebooks/$notebookId/notes/$noteId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  NotesNoteIdRoute: typeof NotesNoteIdRoute
+  NotebooksNotebookIdRouteRoute: typeof NotebooksNotebookIdRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -58,19 +76,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/notes/$noteId': {
-      id: '/notes/$noteId'
-      path: '/notes/$noteId'
-      fullPath: '/notes/$noteId'
-      preLoaderRoute: typeof NotesNoteIdRouteImport
+    '/notebooks/$notebookId': {
+      id: '/notebooks/$notebookId'
+      path: '/notebooks/$notebookId'
+      fullPath: '/notebooks/$notebookId'
+      preLoaderRoute: typeof NotebooksNotebookIdRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/notebooks/$notebookId/notes/$noteId': {
+      id: '/notebooks/$notebookId/notes/$noteId'
+      path: '/notes/$noteId'
+      fullPath: '/notebooks/$notebookId/notes/$noteId'
+      preLoaderRoute: typeof NotebooksNotebookIdNotesNoteIdRouteImport
+      parentRoute: typeof NotebooksNotebookIdRouteRoute
     }
   }
 }
 
+interface NotebooksNotebookIdRouteRouteChildren {
+  NotebooksNotebookIdNotesNoteIdRoute: typeof NotebooksNotebookIdNotesNoteIdRoute
+}
+
+const NotebooksNotebookIdRouteRouteChildren: NotebooksNotebookIdRouteRouteChildren =
+  {
+    NotebooksNotebookIdNotesNoteIdRoute: NotebooksNotebookIdNotesNoteIdRoute,
+  }
+
+const NotebooksNotebookIdRouteRouteWithChildren =
+  NotebooksNotebookIdRouteRoute._addFileChildren(
+    NotebooksNotebookIdRouteRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  NotesNoteIdRoute: NotesNoteIdRoute,
+  NotebooksNotebookIdRouteRoute: NotebooksNotebookIdRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

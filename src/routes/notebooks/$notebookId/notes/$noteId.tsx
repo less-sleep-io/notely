@@ -8,6 +8,6 @@ const Note = () => {
   return <Editor noteId={noteId} />;
 };
 
-export const Route = createFileRoute("/notes/$noteId")({
+export const Route = createFileRoute("/notebooks/$notebookId/notes/$noteId")({
   component: Note,
 });
