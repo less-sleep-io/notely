@@ -6,10 +6,9 @@ interface EditorProps {
 }
 
 const Editor = ({ noteId }: EditorProps) => {
-  const state = useNoteStore((state) => state);
-  const contentBlocks = state.contentBlocks;
-  const addContentBlock = state.addContentBlock;
-  const note = noteId ? state.notes.byId[noteId] : null;
+  const getNote = useNoteStore((state) => state.getNote);
+  const addContentBlock = useNoteStore((state) => state.addContentBlock);
+  const note = noteId ? getNote({ id: noteId }) : null;
 
   if (!note) {
     return (
@@ -22,8 +21,8 @@ const Editor = ({ noteId }: EditorProps) => {
   const selectedNote = {
     ...note,
     content: note?.content
-      .map((blockId) => {
-        return contentBlocks.byId[blockId];
+      .map((block) => {
+        return block;
       })
       .filter((block) => block !== undefined),
   };
@@ -38,12 +37,13 @@ const Editor = ({ noteId }: EditorProps) => {
                 blockId={block.id}
                 key={block.id}
                 onAddContentBlock={({ tag, type }) => {
-                  const block = addContentBlock({
+                  const args = {
                     index: i + 1,
                     noteId: selectedNote.id,
                     tag,
                     type,
-                  });
+                  };
+                  const block = addContentBlock(args);
                   console.log(block);
                 }}
               />

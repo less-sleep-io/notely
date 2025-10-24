@@ -1,6 +1,6 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 
-import Notebook from "~/features/notebook";
+import NoteList from "~/features/noteList";
 
 const NoteBookListLayoutComponent = () => {
   const { notebookId } = Route.useParams();
@@ -9,7 +9,7 @@ const NoteBookListLayoutComponent = () => {
     <>
       <div className="flex min-h-screen w-full bg-neutral-900 text-white">
         <nav className="w-64 shrink-0 border-r border-neutral-800 bg-neutral-800 text-white">
-          <Notebook notebookId={notebookId} />
+          <NoteList notebookId={notebookId} />
         </nav>
         <main className="grow">
           <Outlet />

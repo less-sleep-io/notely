@@ -2,6 +2,26 @@
 
 @theme {
   --font-display: "Noto Sans", "sans-serif";
+  --neutral-0: "#ffffff";
+  --neutral-50: "#f3f3f3";
+  --neutral-100: "#e8e8e8";
+  --neutral-150: "#dcdcdc";
+  --neutral-200: "#d0d0d0";
+  --neutral-250: "#c5c5c5";
+  --neutral-300: "#b9b9b9";
+  --neutral-350: "#aeaeae";
+  --neutral-400: "#a2a2a2";
+  --neutral-450: "#969696";
+  --neutral-500: "#8b8b8b";
+  --neutral-550: "#7f7f7f";
+  --neutral-600: "#737373";
+  --neutral-650: "#686868";
+  --neutral-700: "#5c5c5c";
+  --neutral-750: "#515151";
+  --neutral-800: "#454545";
+  --neutral-850: "#393939";
+  --neutral-900: "#2e2e2e";
+  --neutral-950: "#222222";
 }
 
 @utility text-* {

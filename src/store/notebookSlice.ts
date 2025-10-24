@@ -3,22 +3,41 @@ import { type StateCreator } from "zustand";
 import type { Notebook, NotebookPrimitive } from "../shared.types";
 import type { NoteSlice } from "./noteSlice";
 
+interface AddNoteToNotebookArgs {
+  notebookId: string;
+  noteId: string;
+}
+
+interface DeleteNotebookArgs {
+  id: string;
+}
+
+interface RenameNotebookArgs {
+  id: string;
+  name: string;
+}
+
+interface GetNotebookArgs {
+  id: string;
+}
+
 export interface NotebookSlice {
   addNotebook: () => NotebookPrimitive;
-  deleteNotebook: (id: string) => void;
-  getNotebook: (id: string) => Notebook;
+  addNoteToNotebook: (args: AddNoteToNotebookArgs) => void;
+  deleteNotebook: (args: DeleteNotebookArgs) => void;
+  getNotebook: (args: GetNotebookArgs) => Notebook;
   getNotebooks: () => Notebook[];
   notebooks: {
-    allIds: string[];
-    byId: {
+    entities: {
       [id: string]: NotebookPrimitive;
     };
+    ids: string[];
   };
   notebooksNotes: {
     notebookId: string;
     noteId: string;
   }[];
-  renameNotebook: (id: string, name: string) => NotebookPrimitive;
+  renameNotebook: (args: RenameNotebookArgs) => NotebookPrimitive;
 }
 
 export const createNotebookSlice: StateCreator<
@@ -26,6 +45,7 @@ export const createNotebookSlice: StateCreator<
   [],
   [],
   NotebookSlice
+  // eslint-disable-next-line max-params
 > = (set, get) => ({
   addNotebook: () => {
     const state = get();
@@ -33,38 +53,45 @@ export const createNotebookSlice: StateCreator<
     const notebook: NotebookPrimitive = {
       createdAt: new Date(),
       id,
-      title: `Notebook ${state.notebooks.allIds.length + 1}`,
+      title: `Notebook ${state.notebooks.ids.length + 1}`,
       updatedAt: new Date(),
     };
 
     set((state) => ({
       notebooks: {
-        allIds: [...state.notebooks.allIds, id],
-        byId: {
-          ...state.notebooks.byId,
+        entities: {
+          ...state.notebooks.entities,
           [id]: notebook,
         },
+        ids: [...state.notebooks.ids, id],
       },
     }));
 
     return notebook;
   },
-  deleteNotebook: (id: string) => {
+  addNoteToNotebook: ({ notebookId, noteId }: AddNoteToNotebookArgs) => {
+    const state = get();
+
+    set({
+      notebooksNotes: [...state.notebooksNotes, { notebookId, noteId }],
+    });
+  },
+  deleteNotebook: ({ id }: DeleteNotebookArgs) => {
     const state = get();
     const notebooks = state.notebooks;
-    if (!notebooks.byId[id]) {
+    if (!notebooks.entities[id]) {
       throw new Error(`Notebook with id ${id} not found`);
     }
     const nextNotebooks = {
-      allIds: notebooks.allIds.filter((value) => value !== id),
-      byId: { ...notebooks.byId },
+      entities: { ...notebooks.entities },
+      ids: notebooks.ids.filter((value) => value !== id),
     };
-    delete nextNotebooks.byId[id];
+    delete nextNotebooks.entities[id];
     set({ notebooks: nextNotebooks });
   },
-  getNotebook: (id: string) => {
+  getNotebook: ({ id }: GetNotebookArgs) => {
     const state = get();
-    const notebook = state.notebooks.byId[id];
+    const notebook = state.notebooks.entities[id];
     if (!notebook) {
       throw new Error(`Notebook with id ${id} not found`);
     }
@@ -77,17 +104,17 @@ export const createNotebookSlice: StateCreator<
   },
   getNotebooks: () => {
     const state = get();
-    return state.notebooks.allIds.map((id) => state.getNotebook(id));
+    return state.notebooks.ids.map((id) => state.getNotebook({ id }));
   },
   notebooks: {
-    allIds: [],
-    byId: {},
+    entities: {},
+    ids: [],
   },
   notebooksNotes: [],
-  renameNotebook: (id: string, name: string) => {
+  renameNotebook: ({ id, name }: RenameNotebookArgs) => {
     const state = get();
     const notebooks = state.notebooks;
-    const notebook = notebooks.byId[id];
+    const notebook = notebooks.entities[id];
     if (!notebook) {
       throw new Error(`Notebook with id ${id} not found`);
     }
@@ -99,8 +126,8 @@ export const createNotebookSlice: StateCreator<
     set({
       notebooks: {
         ...notebooks,
-        byId: {
-          ...notebooks.byId,
+        entities: {
+          ...notebooks.entities,
           [id]: updatedNotebook,
         },
       },

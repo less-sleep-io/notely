@@ -8,32 +8,41 @@ export interface AddContentBlockArgs {
   type: "text";
 }
 
+export interface TextBlockSliceArgs {
+  content?: string;
+  tag: TextBlockTag;
+}
+
 export interface RemoveContentBlockArgs {
   blockId: string;
+}
+
+export interface UpdateContentBlockArgs {
+  id: string;
+  content: string;
 }
 
 export interface ContentBlockSlice {
   addContentBlock: (args: AddContentBlockArgs) => TextBlock;
   contentBlocks: {
-    allIds: string[];
-    byId: {
+    entities: {
       [id: string]: TextBlock;
     };
+    ids: string[];
   };
   removeContentBlock: (args: RemoveContentBlockArgs) => void;
   updateContentBlock: (
-    blockId: string,
-    content: string,
+    args: UpdateContentBlockArgs,
   ) => Pick<TextBlock, "content" | "id" | "updatedAt">;
 }
 
-const createContentBlock = (
+const createContentBlock = ({
   content = "New block",
-  tag: TextBlockTag,
-): TextBlock => ({
-  id: crypto.randomUUID(),
+  tag,
+}: TextBlockSliceArgs): TextBlock => ({
   content,
   createdAt: new Date(),
+  id: crypto.randomUUID(),
   tag,
   updatedAt: new Date(),
 });
@@ -43,51 +52,52 @@ export const createContentBlockSlice: StateCreator<
   [],
   [],
   ContentBlockSlice
+  // eslint-disable-next-line max-params
 > = (set, get) => ({
-  contentBlocks: {
-    allIds: [],
-    byId: {},
-  },
   addContentBlock: ({ content, tag }) => {
     const state = get();
     const contentBlocks = state.contentBlocks;
 
-    const newBlock = createContentBlock(content, tag);
+    const newBlock = createContentBlock({ content, tag });
     set({
       contentBlocks: {
-        allIds: [...contentBlocks.allIds, newBlock.id],
-        byId: {
-          ...contentBlocks.byId,
+        entities: {
+          ...contentBlocks.entities,
           [newBlock.id]: newBlock,
         },
+        ids: [...contentBlocks.ids, newBlock.id],
       },
     });
 
     return newBlock;
   },
+  contentBlocks: {
+    entities: {},
+    ids: [],
+  },
   removeContentBlock: ({ blockId }) => {
     const state = get();
     const contentBlocks = state.contentBlocks;
-    const blockToDelete = state.contentBlocks.byId[blockId];
+    const blockToDelete = state.contentBlocks.entities[blockId];
 
     if (!blockToDelete) {
       throw new Error(`Content block with id ${blockId} not found`);
     }
 
-    delete contentBlocks.byId[blockId];
+    delete contentBlocks.entities[blockId];
     set({
       contentBlocks: {
-        allIds: contentBlocks.allIds.filter((id) => id !== blockId),
-        byId: { ...contentBlocks.byId },
+        entities: { ...contentBlocks.entities },
+        ids: contentBlocks.ids.filter((id) => id !== blockId),
       },
     });
 
     return blockToDelete;
   },
-  updateContentBlock: (id: string, content: string) => {
+  updateContentBlock: ({ id, content }) => {
     const state = get();
     const contentBlocks = state.contentBlocks;
-    const block = contentBlocks.byId[id];
+    const block = contentBlocks.entities[id];
     if (!block) {
       throw new Error(`Content block with id ${id} not found`);
     }
@@ -100,8 +110,8 @@ export const createContentBlockSlice: StateCreator<
     set({
       contentBlocks: {
         ...contentBlocks,
-        byId: {
-          ...contentBlocks.byId,
+        entities: {
+          ...contentBlocks.entities,
           [updatedBlock.id]: updatedBlock,
         },
       },

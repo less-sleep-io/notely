@@ -2,46 +2,52 @@ import { type StateCreator } from "zustand";
 
 import type { Note, NotePrimitive, TextBlockTag } from "../shared.types";
 import type { ContentBlockSlice } from "./contentBlockSlice";
+import type { NotebookSlice } from "./notebookSlice";
 import type { RootStore } from "./rootSlice";
 
 export type NoteUpdate = Pick<Note, "id" | "title" | "content">;
 export type NoteDelete = Pick<Note, "id">;
 
-export interface AddContentBlockArgs {
+export interface AddNoteArgs {
+  notebookId: string;
+}
+
+export interface AddNoteContentBlockArgs {
   index: number;
   noteId: string;
   tag: TextBlockTag;
   type: "text";
 }
 
-export interface RemoveContentBlockArgs {
+export interface RemoveNoteContentBlockArgs {
   blockId: string;
   noteId: string;
 }
 
 export interface NoteSlice {
-  addNote: () => NotePrimitive;
-  addNoteContentBlock: (args: AddContentBlockArgs) => void;
+  addNote: (args: AddNoteArgs) => NotePrimitive;
+  addNoteContentBlock: (args: AddNoteContentBlockArgs) => void;
   deleteNote: (args: NoteDelete) => void;
   getNote: (args: { id: string }) => Note;
   getNotes: () => Note[];
   notes: {
-    allIds: string[];
-    byId: {
+    entities: {
       [id: string]: NotePrimitive;
     };
+    ids: string[];
   };
-  removeNoteContentBlock: (args: RemoveContentBlockArgs) => void;
+  removeNoteContentBlock: (args: RemoveNoteContentBlockArgs) => void;
   updateNote: (note: NoteUpdate) => void;
 }
 
 export const createNoteSlice: StateCreator<
-  NoteSlice & RootStore & ContentBlockSlice,
+  NotebookSlice & NoteSlice & RootStore & ContentBlockSlice,
   [],
   [],
   NoteSlice
+  // eslint-disable-next-line max-params
 > = (set, get) => ({
-  addNote: () => {
+  addNote: ({ notebookId }) => {
     const state = get();
     const notes = state.notes;
     // add an initial block to store and get its id
@@ -56,27 +62,30 @@ export const createNoteSlice: StateCreator<
       content: [initialBlock.id],
       createdAt: new Date(),
       id: crypto.randomUUID(),
-      title: `Note ${state.notes.allIds.length + 1}`,
+      title: `Note ${state.notes.ids.length + 1}`,
       updatedAt: new Date(),
     };
 
     // Add the new note to the store
     set({
       notes: {
-        allIds: [...notes.allIds, newNote.id],
-        byId: {
-          ...notes.byId,
+        entities: {
+          ...notes.entities,
           [newNote.id]: newNote,
         },
+        ids: [...notes.ids, newNote.id],
       },
     });
 
+    // Link it to the notebook
+    state.addNoteToNotebook({ notebookId, noteId: newNote.id });
+
     return newNote;
   },
-  addNoteContentBlock: ({ index, noteId, tag }) => {
+  addNoteContentBlock: ({ index, noteId, tag }: AddNoteContentBlockArgs) => {
     const state = get();
     const notes = state.notes;
-    const note = notes.byId[noteId];
+    const note = notes.entities[noteId];
     if (!note) {
       throw new Error(`Note with id ${noteId} not found`);
     }
@@ -96,8 +105,8 @@ export const createNoteSlice: StateCreator<
     set({
       notes: {
         ...notes,
-        byId: {
-          ...notes.byId,
+        entities: {
+          ...notes.entities,
           [updatedNote.id]: updatedNote,
         },
       },
@@ -106,16 +115,16 @@ export const createNoteSlice: StateCreator<
   deleteNote: ({ id }: NoteDelete) => {
     const state = get();
     const notes = state.notes;
-    const noteToDelete = notes.byId[id];
+    const noteToDelete = notes.entities[id];
     const selectedNoteId = state.selectedNoteId;
     if (!noteToDelete) {
       throw new Error(`Note with id ${id} not found`);
     }
     const nextNotes = {
-      allIds: notes.allIds.filter((value) => value !== id),
-      byId: { ...notes.byId },
+      entities: { ...notes.entities },
+      ids: notes.ids.filter((value) => value !== id),
     };
-    delete nextNotes.byId[id];
+    delete nextNotes.entities[id];
 
     get().setSelectedNoteId(selectedNoteId === id ? null : selectedNoteId);
 
@@ -128,7 +137,7 @@ export const createNoteSlice: StateCreator<
   },
   getNote: ({ id }: { id: string }) => {
     const state = get();
-    const note = state.notes.byId[id];
+    const note = state.notes.entities[id];
     const contentBlocks = state.contentBlocks;
 
     if (!note) {
@@ -138,23 +147,23 @@ export const createNoteSlice: StateCreator<
     return {
       ...note,
       content: note.content.map((blockId) => {
-        return contentBlocks.byId[blockId];
+        return contentBlocks.entities[blockId];
       }),
     };
   },
   getNotes: () => {
     const state = get();
     const notes = state.notes;
-    return notes.allIds.map((id) => state.getNote({ id }));
+    return notes.ids.map((id) => state.getNote({ id }));
   },
   notes: {
-    allIds: [],
-    byId: {},
+    entities: {},
+    ids: [],
   },
-  removeNoteContentBlock: ({ blockId, noteId }: RemoveContentBlockArgs) => {
+  removeNoteContentBlock: ({ blockId, noteId }: RemoveNoteContentBlockArgs) => {
     const state = get();
     const notes = state.notes;
-    const note = notes.byId[noteId];
+    const note = notes.entities[noteId];
     if (!note) {
       throw new Error(`Note with id ${noteId} not found`);
     }
@@ -170,8 +179,8 @@ export const createNoteSlice: StateCreator<
     set({
       notes: {
         ...notes,
-        byId: {
-          ...notes.byId,
+        entities: {
+          ...notes.entities,
           [updatedNote.id]: updatedNote,
         },
       },
@@ -180,7 +189,7 @@ export const createNoteSlice: StateCreator<
   updateNote: ({ id, title }: NoteUpdate) => {
     const state = get();
     const notes = state.notes;
-    const note = notes.byId[id];
+    const note = notes.entities[id];
     if (!note) {
       throw new Error(`Note with id ${id} not found`);
     }
@@ -193,8 +202,8 @@ export const createNoteSlice: StateCreator<
     set({
       notes: {
         ...notes,
-        byId: {
-          ...notes.byId,
+        entities: {
+          ...notes.entities,
           [updatedNote.id]: updatedNote,
         },
       },

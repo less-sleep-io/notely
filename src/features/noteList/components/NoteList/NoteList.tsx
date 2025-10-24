@@ -1,14 +1,15 @@
 import { useNavigate } from "@tanstack/react-router";
 import { PagePlus } from "iconoir-react";
 
-import { useNoteStore } from "../../../../store/notes";
+import useNoteStore from "~/store";
+
 import List from "./components/List";
 
-interface NotebookProps {
+interface NoteListProps {
   notebookId: string;
 }
 
-const Notebook = ({ notebookId }: NotebookProps) => {
+const NoteList = ({ notebookId }: NoteListProps) => {
   const addNote = useNoteStore((state) => state.addNote);
   const navigate = useNavigate();
 
@@ -19,7 +20,7 @@ const Notebook = ({ notebookId }: NotebookProps) => {
         <button
           className="flex cursor-pointer items-center justify-end rounded-sm p-1.5 text-neutral-300 hover:bg-neutral-700 hover:text-white"
           onClick={() => {
-            const note = addNote();
+            const note = addNote({ notebookId });
             navigate({
               params: { notebookId: notebookId, noteId: note.id },
               to: "/notebooks/$notebookId/notes/$noteId",
@@ -36,4 +37,4 @@ const Notebook = ({ notebookId }: NotebookProps) => {
   );
 };
 
-export default Notebook;
+export default NoteList;

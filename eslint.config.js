@@ -23,6 +23,7 @@ export default tseslint.config([
     },
     rules: {
       "react-hooks/react-compiler": "error",
+      "sort-keys": ["error", "asc", { caseSensitive: false, natural: true }],
     },
   },
 ]);

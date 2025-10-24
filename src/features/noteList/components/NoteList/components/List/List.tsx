@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Trash } from "iconoir-react";
 
-import { useNoteStore } from "../../../../../../store/notes";
+import useNoteStore from "~/store";
 
 interface ListProps {
   notebookId: string;
@@ -9,8 +9,10 @@ interface ListProps {
 
 const List = ({ notebookId }: ListProps) => {
   const state = useNoteStore((state) => state);
-  const notebook = state.getNotebook(notebookId);
+  const notebook = state.getNotebook({ id: notebookId });
   const deleteNote = state.deleteNote;
+
+  console.log("notebook", notebook);
 
   if (notebook.notes.length === 0) {
     return (
