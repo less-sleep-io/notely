@@ -1,3 +1,3 @@
-import NotesList from "./components/NotesList";
+import NotebookList from "./NotebookList";
 
-export default NotesList;
+export default NotebookList;

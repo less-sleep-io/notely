@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { PagePlus } from "iconoir-react";
 
-import { useNoteStore } from "../../../../store/notes";
+import { useNoteStore } from "../../store/notes";
 import List from "./components/List";
 
 const NotebookList = () => {
