@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import Editor from "~/features/editor";
+import Editor from "~/features/editor/components/editor";
 
 const Note = () => {
   const { noteId } = Route.useParams();
