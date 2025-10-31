@@ -47,7 +47,6 @@ export const createNoteSlice: StateCreator<
   [],
   [],
   NoteSlice
-  // eslint-disable-next-line max-params
 > = (set, get) => ({
   addNote: ({ notebookId }) => {
     const state = get();

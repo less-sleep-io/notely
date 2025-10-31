@@ -52,7 +52,6 @@ export const createContentBlockSlice: StateCreator<
   [],
   [],
   ContentBlockSlice
-  // eslint-disable-next-line max-params
 > = (set, get) => ({
   addContentBlock: ({ content, tag }) => {
     const state = get();

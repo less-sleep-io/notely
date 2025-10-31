@@ -47,7 +47,6 @@ export const createNotebookSlice: StateCreator<
   [],
   [],
   NotebookSlice
-  // eslint-disable-next-line max-params
 > = (set, get) => ({
   addNotebook: () => {
     const state = get();
