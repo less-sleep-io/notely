@@ -5,7 +5,7 @@ import { useNoteStore } from "~/stores/notes";
 
 import List from "./components/list";
 
-const NotebookList = () => {
+const NotebooksList = () => {
   const addNotebook = useNoteStore((state) => state.addNotebook);
   const navigate = useNavigate();
 
@@ -33,4 +33,4 @@ const NotebookList = () => {
   );
 };
 
-export default NotebookList;
+export default NotebooksList;

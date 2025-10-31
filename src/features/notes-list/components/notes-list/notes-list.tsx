@@ -9,7 +9,7 @@ interface NoteListProps {
   notebookId: string;
 }
 
-const NoteList = ({ notebookId }: NoteListProps) => {
+const NotesList = ({ notebookId }: NoteListProps) => {
   const addNote = useNoteStore((state) => state.addNote);
   const navigate = useNavigate();
 
@@ -37,4 +37,4 @@ const NoteList = ({ notebookId }: NoteListProps) => {
   );
 };
 
-export default NoteList;
+export default NotesList;
