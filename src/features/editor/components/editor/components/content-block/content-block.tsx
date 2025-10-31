@@ -1,15 +1,15 @@
 import { Plus } from "iconoir-react";
 import { type HTMLAttributes, useState } from "react";
 
-import Tooltip from "~/components/Tooltip";
+import Tooltip from "~/components/tooltip";
 import {
   TEXT_BLOCK_TAGS,
   type TextBlock,
   type TextBlockTag,
 } from "~/types/app";
+import cn from "~/utils/cn";
 
-import cn from "../../../../utils/cn";
-import DropdownMenu from "../DropdownMenu";
+import DropdownMenu from "../dropdown-menu";
 
 interface onAddContentBlockArgs {
   tag: TextBlockTag;

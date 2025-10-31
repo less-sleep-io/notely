@@ -1,5 +1,6 @@
-import { useNoteStore } from "../../../store/notes";
-import TextBlock from "../components/TextBlock";
+import { useNoteStore } from "~/stores/notes";
+
+import TextBlock from "./components/text-block";
 
 interface EditorProps {
   noteId: string;
@@ -43,8 +44,7 @@ const Editor = ({ noteId }: EditorProps) => {
                     tag,
                     type,
                   };
-                  const block = addContentBlock(args);
-                  console.log(block);
+                  addContentBlock(args);
                 }}
               />
             );

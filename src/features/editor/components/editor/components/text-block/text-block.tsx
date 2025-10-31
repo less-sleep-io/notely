@@ -2,14 +2,12 @@ import { useClickOutside } from "@mantine/hooks";
 import { MoreHorizCircle } from "iconoir-react";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
 
+import { useNoteStore } from "~/stores/notes";
+import type { TextBlock as TextBlockType } from "~/types/app";
 import cn from "~/utils/cn";
 
-import { useNoteStore } from "../../../../store/notes";
-import type { TextBlock as TextBlockType } from "../../../../types/app";
-import ContentBlock, {
-  type ContentBlockProps,
-} from "../ContentBlock/ContentBlock";
-import DropdownMenu from "../DropdownMenu";
+import ContentBlock, { type ContentBlockProps } from "../content-block";
+import DropdownMenu from "../dropdown-menu";
 
 const getTagStyles = (tag: TextBlockType["tag"]) => {
   switch (tag) {

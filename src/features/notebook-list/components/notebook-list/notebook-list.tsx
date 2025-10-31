@@ -1,8 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { PagePlus } from "iconoir-react";
 
-import { useNoteStore } from "../../store/notes";
-import List from "./components/List";
+import { useNoteStore } from "~/stores/notes";
+
+import List from "./components/list";
 
 const NotebookList = () => {
   const addNotebook = useNoteStore((state) => state.addNotebook);

@@ -1,7 +1,7 @@
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import NoteBookList from "~/features/notebook-list";
+import NoteBookList from "~/features/notebook-list/notebook-list";
 
 export const Route = createRootRoute({
   component: () => (

@@ -13,7 +13,7 @@ import {
   Trigger,
 } from "@radix-ui/react-dropdown-menu";
 
-import cn from "../../../../utils/cn";
+import cn from "~/utils/cn";
 
 const DropdownMenuContent = ({
   alignOffset = -8,

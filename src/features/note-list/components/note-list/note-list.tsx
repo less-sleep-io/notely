@@ -1,9 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { PagePlus } from "iconoir-react";
 
-import useNoteStore from "~/store";
+import useNoteStore from "~/stores";
 
-import List from "./components/List";
+import List from "./components/list";
 
 interface NoteListProps {
   notebookId: string;

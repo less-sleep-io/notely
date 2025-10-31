@@ -1,27 +1,21 @@
 import { Link } from "@tanstack/react-router";
 import { Trash } from "iconoir-react";
 
-import useNoteStore from "~/store";
+import useNoteStore from "~/stores";
 
-interface ListProps {
-  notebookId: string;
-}
-
-const List = ({ notebookId }: ListProps) => {
+const List = () => {
   const state = useNoteStore((state) => state);
-  const notebook = state.getNotebook({ id: notebookId });
-  const deleteNote = state.deleteNote;
+  const notebooks = state.getNotebooks();
+  const deleteNotebook = state.deleteNotebook;
 
-  console.log("notebook", notebook);
-
-  if (notebook.notes.length === 0) {
+  if (notebooks.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center space-y-2">
         <h2 className="text-center text-base text-neutral-300">
           No notes available.
         </h2>
         <p className="text-center text-sm text-neutral-400">
-          Click "Add Note" to create one.
+          Click "Add Notebook" to create one.
         </p>
       </div>
     );
@@ -29,21 +23,21 @@ const List = ({ notebookId }: ListProps) => {
 
   return (
     <ul className="space-y-2">
-      {notebook.notes.map((note) => (
+      {notebooks.map((notebook) => (
         <li
           className="flex cursor-pointer justify-between rounded-sm text-sm has-data-[status='active']:bg-neutral-700 has-data-[status='active']:text-white"
-          key={note.id}
+          key={notebook.id}
         >
           <Link
             className="grow px-3 py-2 text-sm text-neutral-300 group-hover:text-white"
-            params={{ notebookId: notebook.id, noteId: note.id }}
-            to="/notebooks/$notebookId/notes/$noteId"
+            params={{ notebookId: notebook.id }}
+            to="/notebooks/$notebookId"
           >
-            {note.title || "Untitled Note"}
+            {notebook.title || "Untitled Notebook"}
           </Link>
           <button
             className="cursor-pointer px-3 py-1 text-neutral-400 group-hover:text-shadow-neutral-100"
-            onClick={() => deleteNote(note)}
+            onClick={() => deleteNotebook({ id: notebook.id })}
           >
             <Trash className="h-4 w-4" />
           </button>
