@@ -1,6 +1,6 @@
-export type * from "./notebookSlice";
-export type * from "./noteSlice";
-export type * from "./contentBlockSlice";
-export type * from "./rootSlice";
+export type * from "./notebook-slice";
+export type * from "./note-slice";
+export type * from "./content-block-slice";
+export type * from "./root-slice";
 
 export { useNoteStore as default } from "./notes";

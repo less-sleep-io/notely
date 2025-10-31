@@ -4,10 +4,10 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import {
   type ContentBlockSlice,
   createContentBlockSlice,
-} from "./contentBlockSlice";
-import { type NoteSlice, createNoteSlice } from "./noteSlice";
-import { type NotebookSlice, createNotebookSlice } from "./notebookSlice";
-import { type RootStore, createRootSlice } from "./rootSlice";
+} from "./content-block-slice";
+import { type NoteSlice, createNoteSlice } from "./note-slice";
+import { type NotebookSlice, createNotebookSlice } from "./notebook-slice";
+import { type RootStore, createRootSlice } from "./root-slice";
 
 export const useNoteStore = create<
   RootStore & NoteSlice & NotebookSlice & ContentBlockSlice

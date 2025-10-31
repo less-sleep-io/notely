@@ -3,9 +3,9 @@ import { type StateCreator } from "zustand";
 import type { NotePrimitive } from "~/types/api";
 import type { Note, TextBlockTag } from "~/types/app";
 
-import type { ContentBlockSlice } from "./contentBlockSlice";
-import type { NotebookSlice } from "./notebookSlice";
-import type { RootStore } from "./rootSlice";
+import type { ContentBlockSlice } from "./content-block-slice";
+import type { NotebookSlice } from "./notebook-slice";
+import type { RootStore } from "./root-slice";
 
 export type NoteUpdate = Pick<Note, "id" | "title" | "content">;
 export type NoteDelete = Pick<Note, "id">;

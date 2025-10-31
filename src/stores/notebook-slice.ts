@@ -3,7 +3,7 @@ import { type StateCreator } from "zustand";
 import type { NotebookPrimitive } from "~/types/api";
 
 import type { Notebook } from "../types/app";
-import type { NoteSlice } from "./noteSlice";
+import type { NoteSlice } from "./note-slice";
 
 interface AddNoteToNotebookArgs {
   notebookId: string;
