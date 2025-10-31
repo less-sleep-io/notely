@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Trash } from "iconoir-react";
 
-import { useNoteStore } from "../../../../../../store/notes";
+import useNoteStore from "~/store";
 
 const List = () => {
   const state = useNoteStore((state) => state);
