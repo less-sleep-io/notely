@@ -4,8 +4,8 @@ import { type ChangeEvent, useEffect, useRef, useState } from "react";
 
 import cn from "~/utils/cn";
 
-import type { TextBlock as TextBlockType } from "../../../../shared.types";
 import { useNoteStore } from "../../../../store/notes";
+import type { TextBlock as TextBlockType } from "../../../../types/app";
 import ContentBlock, {
   type ContentBlockProps,
 } from "../ContentBlock/ContentBlock";
@@ -37,7 +37,7 @@ interface TextBlockProps extends Omit<ContentBlockProps, "block"> {
 
 const TextBlock = ({ blockId, onAddContentBlock, ...rest }: TextBlockProps) => {
   const block = useNoteStore((state) => {
-    return state.contentBlocks.byId[blockId];
+    return state.contentBlocks.entities[blockId];
   });
   const [isEditing, setIsEditing] = useState(false);
   const updateContentBlock = useNoteStore((state) => state.updateContentBlock);
@@ -55,11 +55,11 @@ const TextBlock = ({ blockId, onAddContentBlock, ...rest }: TextBlockProps) => {
       elementRef.current.style.height = `${evt.target.scrollHeight}px`;
     }
 
-    updateContentBlock(block.id, evt.target.value);
+    updateContentBlock({ content: evt.target.value, id: block.id });
   };
 
   const handleRemove = () => {
-    removeContentBlock({ blockId: block.id, noteId: block.parentId });
+    removeContentBlock({ blockId: block.id });
   };
 
   useEffect(() => {

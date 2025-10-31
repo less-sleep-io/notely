@@ -1,6 +1,6 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 
-import NoteList from "~/features/noteList";
+import NoteList from "~/features/note-list";
 
 const NoteBookListLayoutComponent = () => {
   const { notebookId } = Route.useParams();

@@ -1,26 +1,17 @@
-import { TooltipProvider } from "@radix-ui/react-tooltip";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { StrictMode } from "react";
+import * as React from "react";
 import { createRoot } from "react-dom/client";
 
-import "~/index.css";
+import { App } from "./app";
+import "./index.css";
 
-import { routeTree } from "./routeTree.gen";
+const root = document.getElementById("root");
 
-// Create a new router instance
-const router = createRouter({ routeTree });
-
-// Register the router instance for type safety
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
+if (!root) {
+  throw new Error("No root element found");
 }
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <TooltipProvider>
-      <RouterProvider router={router} />
-    </TooltipProvider>
-  </StrictMode>,
+createRoot(root).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
 );

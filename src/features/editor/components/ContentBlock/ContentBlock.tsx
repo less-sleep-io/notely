@@ -2,9 +2,12 @@ import { Plus } from "iconoir-react";
 import { type HTMLAttributes, useState } from "react";
 
 import Tooltip from "~/components/Tooltip";
+import {
+  TEXT_BLOCK_TAGS,
+  type TextBlock,
+  type TextBlockTag,
+} from "~/types/app";
 
-import { TEXT_BLOCK_TAGS } from "../../../../shared.constants";
-import type { TextBlock, TextBlockTag } from "../../../../shared.types";
 import cn from "../../../../utils/cn";
 import DropdownMenu from "../DropdownMenu";
 

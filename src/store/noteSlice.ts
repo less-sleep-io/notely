@@ -1,6 +1,8 @@
 import { type StateCreator } from "zustand";
 
-import type { Note, NotePrimitive, TextBlockTag } from "../shared.types";
+import type { NotePrimitive } from "~/types/api";
+import type { Note, TextBlockTag } from "~/types/app";
+
 import type { ContentBlockSlice } from "./contentBlockSlice";
 import type { NotebookSlice } from "./notebookSlice";
 import type { RootStore } from "./rootSlice";

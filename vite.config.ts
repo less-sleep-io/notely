@@ -8,8 +8,9 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [
     tanstackRouter({
-      target: "react",
       autoCodeSplitting: true,
+      routesDirectory: "./src/app/routes",
+      target: "react",
     }),
     react({
       babel: {

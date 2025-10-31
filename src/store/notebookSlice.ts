@@ -1,6 +1,8 @@
 import { type StateCreator } from "zustand";
 
-import type { Notebook, NotebookPrimitive } from "../shared.types";
+import type { NotebookPrimitive } from "~/types/api";
+
+import type { Notebook } from "../types/app";
 import type { NoteSlice } from "./noteSlice";
 
 interface AddNoteToNotebookArgs {

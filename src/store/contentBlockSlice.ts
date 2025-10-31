@@ -1,6 +1,6 @@
 import { type StateCreator } from "zustand";
 
-import type { TextBlock, TextBlockTag } from "../shared.types";
+import type { TextBlock, TextBlockTag } from "../types/app";
 
 export interface AddContentBlockArgs {
   content?: string;
